@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Upload Example</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+</head>
+
+<body>
+    <style>
+        .labelImg:hover {
+            cursor: pointer;
+        }
+
+        .group {
+            background-color: #fff;
+            height: 100px;
+            width: 100px;
+            text-align: center;
+        }
+
+        .group .labelImg {
+            position: relative;
+            height: 100px;
+        }
+
+        .group .labelImg #upimage {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            display: none;
+        }
+
+        .group .labelImg #londBtn {
+            border: none;
+            line-height: 100px;
+            border: 1px solid #d5d5d5;
+        }
+
+        .group .labelImg .title {
+            position: absolute;
+            bottom: 0;
+            width: 199%;
+            text-align: center;
+            background: #666666;
+            color: #fff;
+            font-size: 12px;
+            padding: 5px 0px;
+        }
+    </style>
+    <input type="file" id="fileInput" accept="image/*">
+    <button id="uploadButton">Upload</button>
+    <div class="group" id="updata" style="display: none;">
+        <div class="labelImg">
+            <img id="previewImage" style=" max-width: 100px; max-height: 100px;">
+            <div class="title" style="width: 100%;">其他</div>
+        </div>
+    </div>
+
+    <div class="group">
+        <label class="labelImg">
+            <div id="londBtn">+</div>
+            <input type="file" id="upimage" data-param1="123" id="file1" />
+            <div class="title">上传其他照片</div>
+        </label>
+    </div>
+    <div class="group">
+        <label class="labelImg">
+            <div id="londBtn">+</div>
+            <input type="file" id="upimage" data-param1="321" id="file2" />
+            <div class="title">上传照片</div>
+        </label>
+    </div>
+    <div class="group">
+        <label class="labelImg">
+            <div id="londBtn">+</div>
+            <input type="file" id="upimage" data-param1="321" id="file3" />
+            <div class="title">上传</div>
+        </label>
+    </div>
+    <script>
+
+        var thisInputId = ""
+        function askjdh() {
+            // previewImage(this);
+        }
+        $(document).ready(function () {
+            $("#upimage").change(function () {
+                thisInputId = event.target.id;
+                console.log(thisInputId)
+                previewImage(this);
+            });
+        });
+
+        function previewImage(input) {
+            var file = input.files[0];
+            if (file) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    var param1Value = $("#upimage").data("param1");
+                    $("#previewImage").attr("src", e.target.result);
+                    uploadImage(file);
+                    $("#updata").css("display", "block");
+                };
+
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function uploadImage(e) {
+            var file = e;
+            var param1Value = $("#upimage").data("param1");
+            console.log(param1Value)
+            return
+            if (file) {
+                var formData = new FormData();
+                formData.append("file", file);
+
+                $.ajax({
+                    type: "POST",
+                    url: "http://192.168.1.14:8096/caseinfo/uploadCasePhotoNew",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        // 找到当前上传组件 document.getElementById(thisInputId)
+                        alert("Upload successful!");
+                    },
+                    error: function (error) {
+                        console.error("Error uploading image:", error);
+                    }
+                });
+            } else {
+                alert("Please select an image to upload.");
+            }
+        }
+    </script>
+
+</body>
+
+</html>
